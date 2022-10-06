@@ -6,6 +6,25 @@ import math
 
 cap = cv.VideoCapture(2)#my webcam(2),default(0)
 
+parameter1=100
+def update1(value):
+    global parameter1
+    parameter1=value
+
+parameter2=100
+def update2(value):
+    global parameter2
+    parameter2=value
+
+
+
+
+
+
+cv.namedWindow("frame")
+cv.createTrackbar('Param1', "frame", 0, 500, update1)
+cv.createTrackbar('Param2', "frame", 0, 500, update2)
+
 while(1):
     # Take each frame
     _, frame = cap.read()
@@ -31,10 +50,10 @@ while(1):
 
     #cv.imshow('res',res)
     #cv.imshow('mask',mask)
-    parameter1=100
+    
     img = cv.medianBlur(frame,5)
     cimg = cv.cvtColor(img,cv.COLOR_BGR2GRAY)
-    circles = cv.HoughCircles(cimg,cv.HOUGH_GRADIENT,2,30,param1=parameter1,param2=175,minRadius=5,maxRadius=200)
+    circles = cv.HoughCircles(cimg,cv.HOUGH_GRADIENT,2,10,param1=parameter1,param2=parameter2,minRadius=5,maxRadius=200)
     
     if type(circles) != NoneType:
         circles = np.uint16(np.around(circles))
@@ -48,7 +67,9 @@ while(1):
         cv.imshow('cimg',cimg)
     cv.imshow("edges", cv.Canny(img,parameter1/2,parameter1))
     cv.imshow('frame',frame)
+    
 
+    
     k = cv.waitKey(5) & 0xFF
     if k == 27:
         break
