@@ -6,6 +6,14 @@ import math
 THRESHOLD=10
 cap = cv.VideoCapture(0)#my webcam(2),default(0)
 cv.namedWindow("frame")
+def is_rect(p1,p2,p3,p4):
+    dists=[math.dist(p1,p2),math.dist(p1,p3),math.dist(p1,p4),math.dist(p3,p2),math.dist(p4,p2),math.dist(p3,p4)]
+    dists.sort()
+    return threshold(dists[0],dists[1],THRESHOLD) and threshold(dists[2],dists[3],THRESHOLD)
+
+
+def threshold(n1,n2,t):
+    return ((n1-n2)**2)**(1/2)<t
 while(1):
     # Take each frame
     _, frame = cap.read()
@@ -59,11 +67,3 @@ while(1):
     if k == 27:
         break
 
-def is_rect(p1,p2,p3,p4):
-    dists=[math.dist(p1,p2),math.dist(p1,p3),math.dist(p1,p4),math.dist(p3,p2),math.dist(p4,p2),math.dist(p3,p4)]
-    dists.sort()
-    return threshold(dists[0],dists[1],THRESHOLD) and threshold(dists[2],dists[3],THRESHOLD)
-
-
-def threshold(n1,n2,t):
-    return ((n1-n2)**2)**(1/2)<t
