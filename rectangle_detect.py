@@ -3,6 +3,7 @@ import cv2 as cv
 import numpy as np 
 import time
 import math
+THRESHOLD=10
 cap = cv.VideoCapture(0)#my webcam(2),default(0)
 cv.namedWindow("frame")
 while(1):
@@ -46,14 +47,23 @@ while(1):
         approx = cv.approxPolyDP(i,epsilon,True)
         
         if len(approx) == 4:
-            print(approx)
-            Corner_dists=[]
-            #pythagoras
-            cv.drawContours(frame,cntrRect,-1,(0,255,0),2)
-            cv.imshow('rects',frame)
-            cntrRect.append(approx)
+            if is_rect(*approx):
+                print(approx)
+                Corner_dists=[]
+                #pythagoras
+                cv.drawContours(frame,cntrRect,-1,(0,255,0),2)
+                cv.imshow('rects',frame)
+                cntrRect.append(approx)
     
     k = cv.waitKey(5) & 0xFF
     if k == 27:
         break
 
+def is_rect(p1,p2,p3,p4):
+    dists=[math.dist(p1,p2),math.dist(p1,p3),math.dist(p1,p4),math.dist(p3,p2),math.dist(p4,p2),math.dist(p3,p4)]
+    dists.sort()
+    return threshold(dists[0],dists[1],THRESHOLD) and threshold(dists[2],dists[3],THRESHOLD)
+
+
+def threshold(n1,n2,t):
+    return ((n1-n2)**2)**(1/2)<t
