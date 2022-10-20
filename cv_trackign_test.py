@@ -4,7 +4,7 @@ import numpy as np
 import time
 import math
 
-cap = cv.VideoCapture(2)#my webcam(2),default(0)
+cap = cv.VideoCapture(0)#my webcam(2),default(0)
 
 parameter1=100
 def update1(value):
