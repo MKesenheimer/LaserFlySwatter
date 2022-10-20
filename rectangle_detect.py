@@ -3,7 +3,7 @@ import cv2 as cv
 import numpy as np 
 import time
 import math
-
+cap = cv.VideoCapture(2)#my webcam(2),default(0)
 while(1):
     # Take each frame
     _, frame = cap.read()
