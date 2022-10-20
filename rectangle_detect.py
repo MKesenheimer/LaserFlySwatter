@@ -47,7 +47,7 @@ while(1):
         
         if len(approx) == 4:
             print(approx)
-            vorner_dists=[]
+            Corner_dists=[]
             #pythagoras
             cv.drawContours(frame,cntrRect,-1,(0,255,0),2)
             cv.imshow('rects',frame)
