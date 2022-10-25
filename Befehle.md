@@ -42,6 +42,9 @@ Beispiel:
 > git commit -m "Fehler durch Videoausgabe behoben"
 > git commit -m "Neue Funktion XY hinzugefügt"
 
+Zum letzten Stand zurück gehen:
+> git reset --hard HEAD
+
 Änderungen hochladen:
 > git push
 
