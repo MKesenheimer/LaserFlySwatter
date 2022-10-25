@@ -1,10 +1,11 @@
-from types import NoneType
+#from types import NoneType
 import cv2 as cv
 import numpy as np 
 import time
 import math
 
-cap = cv.VideoCapture(0)#my webcam(2),default(0)
+# my webcam(2), default(0)
+cap = cv.VideoCapture(0)
 
 parameter1=100
 def update1(value):
@@ -21,9 +22,6 @@ def update3(value):
     global parameter3
     parameter3=value
 
-
-
-
 cv.namedWindow("frame")
 cv.createTrackbar('Param1', "frame", 0, 500, update1)
 cv.createTrackbar('Threshhold(circles)', "frame", 0, 500, update2)
@@ -35,13 +33,10 @@ while(1):
     
     # Convert BGR to HSV
     #hsv = cv.cvtColor(frame, cv.COLOR_BGR2HSV)
-
-    
-    
     #hsv_c = cv.cvtColor(frame, cv.COLOR_BGR2HSV)
-    
-    
+
     # define range of blue color in HSV
+    parameter3 = 10
     lower = np.array([parameter3,parameter3,parameter3])
     upper = np.array([255,255,255])
 
@@ -49,10 +44,8 @@ while(1):
     mask = cv.inRange(frame, lower, upper)
     
     # Bitwise-AND mask and original image
-    res = cv.bitwise_and(frame,frame, mask= mask)
-    cv.imshow("res",res)
-
-    #cv.imshow('res',res)
+    res = cv.bitwise_and(frame, frame, mask=mask)
+    #cv.imshow("res",res)
     #cv.imshow('mask',mask)
     
     img = cv.medianBlur(res,3)
@@ -66,13 +59,10 @@ while(1):
         cv.circle(cimg,(i[0],i[1]),i[2],(0,255,0),2)
         # draw the center of the circle
         cv.circle(cimg,(i[0],i[1]),2,(0,0,255),3)
-
-
         cv.imshow('cimg',cimg)
-    cv.imshow("edges", cv.Canny(img,parameter1/2,parameter1))
+        
+    #cv.imshow("edges", cv.Canny(img,parameter1/2,parameter1))
     cv.imshow('frame',frame)
-    
-
     
     k = cv.waitKey(5) & 0xFF
     if k == 27:
