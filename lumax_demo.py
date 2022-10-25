@@ -16,7 +16,7 @@ print("SetTTL return: {}".format(lumax.setTTL(lhandle, 0)))
 ret, timeToWait, bufferChanged = lumax.wait_for_buffer(lhandle, 17)
 print("WaitForBuffer return: {}, {}, {}".format(ret, timeToWait, bufferChanged))
 
-brigthness = 1.0 # 0 to 1
+brigthness = 0.35 # 0 to 1
 r = int(brigthness * 255 * 255)
 g = int(brigthness * 255 * 255)
 b = int(brigthness * 255 * 255)
@@ -40,7 +40,7 @@ for i in range(0, npoints):
 ret, timeToWait = lumax.send_frame(lhandle, points, 4000, 0)
 print("SendFrame return: {}, {}".format(ret, timeToWait))
 ret, timeToWait, bufferChanged = lumax.wait_for_buffer(lhandle, 17)
-time.sleep(1)
+time.sleep(10)
 
 print("StopFrame return: {}".format(lumax.stop_frame(lhandle)))
 print("CloseDevice return: {}".format(lumax.close_device(lhandle)))
