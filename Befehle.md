@@ -5,7 +5,9 @@ CMD öffnen:
 Windowstaste + cmd 
 
 Ordnerinhalt anzeigen:
+```
 > dir
+```
 
 In einen Ordner wechseln:
 > cd <Pfad>
