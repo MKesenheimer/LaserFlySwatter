@@ -27,20 +27,7 @@ def main():
     g = restrict(g, 0, 255 * 255)
     b = restrict(b, 0, 255 * 255)
     # generiere einen Kreis mit 100 Punkten
-    npoints = 100
-    points = lpoints(npoints)
-    for i in range(0, npoints):
-        x, y = lumax.circle_point(128 * 255, 128 * 255, 5000, i, npoints)
-        points.struct_arr[i].x = x
-        points.struct_arr[i].y = y
-        points.struct_arr[i].r = r
-        points.struct_arr[i].g = g
-        points.struct_arr[i].b = b
-
-    # print the points
-    #for i in range(0, points.length):
-    #    print("p{} = {}, {}, {}, {}, {}".format(i, points.struct_arr[i].x, points.struct_arr[i].y, points.struct_arr[i].r, points.struct_arr[i].g, points.struct_arr[i].b))
-
+    points = lumax.gen_circle(128 * 255, 128 * 255, 5000, 100, r, g, b)
     ret, timeToWait = lumax.send_frame(lhandle, points, 10000, 0)
     print("SendFrame return: {}, {}".format(ret, timeToWait))
     ret, timeToWait, bufferChanged = lumax.wait_for_buffer(lhandle, 17)
