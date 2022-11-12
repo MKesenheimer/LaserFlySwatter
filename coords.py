@@ -3,7 +3,7 @@ import math
 import time
 import cv2 as cv
 
-
+#coordinates
 class coords():
     def __init__(self,laser_c,img_c):
         self.laser_c=laser_c
