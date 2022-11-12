@@ -19,7 +19,7 @@ def main():
     ret, timeToWait, bufferChanged = lumax.wait_for_buffer(lhandle, 17)
     print("WaitForBuffer return: {}, {}, {}".format(ret, timeToWait, bufferChanged))
 
-    brigthness = 0.35 # 0 to 1
+    brigthness = 0.45 # 0 to 1
     r = int(brigthness * 255 * 255)
     g = int(brigthness * 255 * 255)
     b = int(brigthness * 255 * 255)
@@ -41,7 +41,7 @@ def main():
     #for i in range(0, points.length):
     #    print("p{} = {}, {}, {}, {}, {}".format(i, points.struct_arr[i].x, points.struct_arr[i].y, points.struct_arr[i].r, points.struct_arr[i].g, points.struct_arr[i].b))
 
-    ret, timeToWait = lumax.send_frame(lhandle, points, 4000, 0)
+    ret, timeToWait = lumax.send_frame(lhandle, points, 10000, 0)
     print("SendFrame return: {}, {}".format(ret, timeToWait))
     ret, timeToWait, bufferChanged = lumax.wait_for_buffer(lhandle, 17)
     time.sleep(100)
