@@ -3,38 +3,37 @@ import time
 import math
 import sys
 import os
-
-def restrict(x, minx, maxx):
-    return max(min(maxx, x), minx)
+import numpy
 
 def main():
-    global lhandle
-    print("API version: {}".format(lumax.get_api_version()))
-    print("Number of physical devices: {}".format(lumax.get_physical_devices()))
-    lhandle = lumax.open_device(1, 0)
-    print("Lumax handle: {}".format(lhandle))
+    try:
+        renderer = lumax_renderer()
 
-    print("SetTTL return: {}".format(lumax.setTTL(lhandle, 0)))
+        # setup frame, generate circle
+        brigthness = 0.45 # 0 to 1
+        r = int(brigthness * 255 * 255)
+        g = int(brigthness * 255 * 255)
+        b = int(brigthness * 255 * 255)
+        r = restrict(r, 0, 255 * 255)
+        g = restrict(g, 0, 255 * 255)
+        b = restrict(b, 0, 255 * 255)
+        circle = geometry.new_circle(128 * 255, 128 * 255, 5000, 100, r, g, b)
+        renderer.add_shape_to_frame(circle)
 
-    ret, timeToWait, bufferChanged = lumax.wait_for_buffer(lhandle, 17)
-    print("WaitForBuffer return: {}, {}, {}".format(ret, timeToWait, bufferChanged))
+        # send the frame to the device
+        renderer.send_frame(10000)
 
-    brigthness = 0.45 # 0 to 1
-    r = int(brigthness * 255 * 255)
-    g = int(brigthness * 255 * 255)
-    b = int(brigthness * 255 * 255)
-    r = restrict(r, 0, 255 * 255)
-    g = restrict(g, 0, 255 * 255)
-    b = restrict(b, 0, 255 * 255)
-    # generiere einen Kreis mit 100 Punkten
-    points = lumax.gen_circle(128 * 255, 128 * 255, 5000, 100, r, g, b)
-    ret, timeToWait = lumax.send_frame(lhandle, points, 10000, 0)
-    print("SendFrame return: {}, {}".format(ret, timeToWait))
-    ret, timeToWait, bufferChanged = lumax.wait_for_buffer(lhandle, 17)
-    time.sleep(100)
+        # wait and close device
+        time.sleep(100)
+        renderer.close_device()
 
-    print("StopFrame return: {}".format(lumax.stop_frame(lhandle)))
-    print("CloseDevice return: {}".format(lumax.close_device(lhandle)))
+    except KeyboardInterrupt:
+        print("Exiting.")
+        renderer.close_device()
+        try:
+            sys.exit(0)
+        except SystemExit:
+            os._exit(0)
 
 # main program
 if __name__ == '__main__':
@@ -44,14 +43,5 @@ if __name__ == '__main__':
     #parser.add_argument('--pack', dest='pack', type=int, default=24, help='y-position to read the data from')
     #args = parser.parse_args()
 
-    global lhandle
-    try:
-        main()
-    except KeyboardInterrupt:
-        print("Exiting.")
-        lumax.stop_frame(lhandle)
-        lumax.close_device(lhandle)
-        try:
-            sys.exit(0)
-        except SystemExit:
-            os._exit(0)
+    main()
+
