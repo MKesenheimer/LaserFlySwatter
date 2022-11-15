@@ -17,11 +17,11 @@ def main():
         r = restrict(r, 0, 255 * 255)
         g = restrict(g, 0, 255 * 255)
         b = restrict(b, 0, 255 * 255)
-        circle = geometry.new_circle(128 * 255, 128 * 255, 5000, 100, r, g, b)
+        circle = geometry.circle(128 * 255, 128 * 255, 5000, 100, r, g, b)
         renderer.add_shape_to_frame(circle)
 
         # add another circle
-        circle1 = geometry.new_circle(150 * 255, 150 * 255, 500, 10, 0, 255 * 255, 0)
+        circle1 = geometry.circle(150 * 255, 150 * 255, 500, 10, 0, 255 * 255, 0)
         renderer.add_shape_to_frame(circle1)
 
         # add a point
@@ -31,8 +31,38 @@ def main():
         # send the frame to the device
         renderer.send_frame(1000)
 
-        # wait and close device
+        # wait
+        time.sleep(1)
+
+        # new frame
+        renderer.new_frame()
+
+        # add multiple points (triangle)
+        points = numpy.array([[190 * 255, 170 * 255, 0, 255 * 255, 255 * 255], 
+                              [190 * 255, 190 * 255, 0, 255 * 255, 255 * 255],
+                              [200 * 255, 190 * 255, 0, 255 * 255, 255 * 255],
+                              [190 * 255, 170 * 255, 0, 255 * 255, 255 * 255]])
+        renderer.add_points_to_frame(points)
+
+        # add line with interpolated points
+        line = geometry.line(160 * 255, 160 * 255, 178 * 255, 178 * 255, 5, 255 * 255, 255 * 255, 255 * 255)
+        renderer.add_shape_to_frame(line)
+
+        # add triangle
+        triangle = geometry.triangle(100 * 255, 100 * 255, 156 * 255, 100 * 255, 128 * 255, 90 * 255, 10, 255 * 255, 255 * 255, 0)
+        renderer.add_shape_to_frame(triangle)
+
+        # add square
+        square = geometry.tetragon(118 * 255, 118 * 255, 138 * 255, 118 * 255, 138 * 255, 138 * 255, 118 * 255, 138 * 255, 10, 255 * 255, 0, 255 * 255)
+        renderer.add_shape_to_frame(square)
+
+        # send the frame to the device
+        renderer.send_frame(1000)
+
+        # wait
         time.sleep(100)
+
+        # close device
         renderer.close_device()
 
     except KeyboardInterrupt:
