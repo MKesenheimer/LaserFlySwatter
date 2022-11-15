@@ -9,7 +9,7 @@ def main():
     try:
         renderer = lumax_renderer()
 
-        # setup frame, generate circle
+        # setup frame, generate a circle
         brigthness = 0.45 # 0 to 1
         r = int(brigthness * 255 * 255)
         g = int(brigthness * 255 * 255)
@@ -20,8 +20,16 @@ def main():
         circle = geometry.new_circle(128 * 255, 128 * 255, 5000, 100, r, g, b)
         renderer.add_shape_to_frame(circle)
 
+        # add another circle
+        circle1 = geometry.new_circle(150 * 255, 150 * 255, 500, 10, 0, 255 * 255, 0)
+        renderer.add_shape_to_frame(circle1)
+
+        # add a point
+        point = numpy.array([128 * 255, 128 * 255, 255 * 255, 255 * 255, 255 * 255])
+        renderer.add_point_to_frame(point)
+
         # send the frame to the device
-        renderer.send_frame(10000)
+        renderer.send_frame(1000)
 
         # wait and close device
         time.sleep(100)
