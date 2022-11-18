@@ -20,9 +20,9 @@ while ret:
 video = np.stack(frames, axis=0)
 print(video.shape)
 c_system=(coords(video,[100,100,5000]))
-frame=video[20]
 print(c_system.img_c)
-
+for i in range(video.shape[0]):
+    cv.circle(video[i],(c_system.img_c[0],c_system.img_c[1]),c_system.img_c[2],(0,0,255),3)
 i=0
 while(1):
     cv.imshow("test",video[i])
