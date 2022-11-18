@@ -24,8 +24,8 @@ def main():
         g = restrict(g, 0, 255 * 255)
         b = restrict(b, 0, 255 * 255)
         # coordinates of the circle in the coordinate system of the laser
-        circle_cl = numpy.array([128 * 255, 128 * 255, 10000])
-        circle_shape = geometry.circle(circle_cl[0], circle_cl[1], circle_cl[2], 100, r, g, b)
+        circle_col = numpy.array([128 * 255, 128 * 255, 8000])
+        circle_shape = geometry.circle(circle_col[0], circle_col[1], circle_col[2], 100, r, g, b)
         renderer.add_shape_to_frame(circle_shape)
 
         # send the frame to the device
@@ -42,27 +42,35 @@ def main():
             # Take each frame and add to the list
             _, frame = cap.read()
             images.append(frame)
-
         # cast of list of images to numpy array
         images = numpy.array(images)
+
+        # when all frames captures, close device and print status
+        renderer.close_device()
         print("[INFO] {} images captured. Continuing with calibration routine...".format(len(images)))
         print("[DEBUG] Shape of images: {}".format(images.shape))
 
+        
         # call the calibration routine
-        coord_transformer = coords(images, circle_cl)
+        coord_transformer = coords(images, circle_col)
         # coordinates of the circle in the coordinate system of the camera
-        circle_cc = coord_transformer.image_coords()
-        print("[INFO] Coordinates of circle in CC: {}".format(circle_cc))
-        print("[INFO] Original coordinates of circle in CL: {}".format(circle_cl))
-        print("[INFO] Back-transformed coordinates of circle in CL: {}".format(coord_transformer.laser_coords(circle_cc[0:2])))
+        circle_coc = coord_transformer.image_coords()
+        print("[INFO] CL: Coordinate system of laser; CC: Coordinate system of camera.")
+        print("[INFO] Coordinates of circle in CC: {}".format(circle_coc))
+        print("[INFO] Original coordinates of circle in CL: {}".format(circle_col))
+        print("[INFO] Back-transformed coordinates of circle in CL: {}".format(coord_transformer.laser_coords(circle_coc[0:2])))
 
-        # show one image and the found circle
-        cv.circle(images[0], (circle_cc[0], circle_cc[1]), circle_cc[2], (0, 0, 255), 3)
-        cv.imshow("Calibration", images[0])
+        # check: show one image and the found circle
+        cv.circle(images[0], (circle_coc[0], circle_coc[1]), circle_coc[2], (0, 0, 255), 3)
+        starttime = time.time()
+        duration = 1
+        while time.time() - starttime <= duration:
+            cv.imshow("Calibration", images[0])
+            k = cv.waitKey(5) & 0xFF
+            if k == 27:
+                break
+
         time.sleep(5)
-
-        # close device
-        renderer.close_device()
 
     except KeyboardInterrupt:
         print("Exiting.")
