@@ -18,21 +18,24 @@ class coords():
                 c=circles[0,0]
                 # draw the outer circle
                 img_circles.append(c)
-        def sortkey(iteration):
-            def rf(c):
-                return(c[iteration])
-            return rf
-        img_circles.sort(key=sortkey(0))
-        img_circles=np.array(img_circles)[int(len(img_circles)/10):1-int(len(img_circles)/10)]
-        img_circles=list(img_circles)
-        img_circles.sort(key=sortkey(1))
-        img_circles=np.array(img_circles)[int(len(img_circles)/10):1-int(len(img_circles)/10)]
-        img_circles=list(img_circles)
-        img_circles.sort(key=sortkey(2))
-        img_circles=np.array(img_circles)[int(len(img_circles)/10):1-int(len(img_circles)/10)]
-        img_c=[np.sum(img_circles[:,0])/len(img_circles),np.sum(img_circles[:,1])/len(img_circles),np.sum(img_circles[:,2])/len(img_circles)]    
-        print(img_c)
+        #def sortkey(iteration):
+        #    def rf(c):
+        #        return(c[iteration])
+        #    return rf
+        img_circles=np.array(img_circles)
+        #img_circles.sort(key=sortkey(0))
+        #img_circles=np.array(img_circles)[int(len(img_circles)/10):1-int(len(img_circles)/10)]
+        #img_circles=list(img_circles)
+        #img_circles.sort(key=sortkey(1))
+        #img_circles=np.array(img_circles)[int(len(img_circles)/10):1-int(len(img_circles)/10)]
+        #img_circles=list(img_circles)
+        #img_circles.sort(key=sortkey(2))
+        #img_circles=np.array(img_circles)[int(len(img_circles)/10):1-int(len(img_circles)/10)]
+        img_c=np.array([np.sum(img_circles[:,0])/len(img_circles),np.sum(img_circles[:,1])/len(img_circles),np.sum(img_circles[:,2])/len(img_circles)],dtype="int16")
+        #print(img_c)
+        #print(img_circles)
         self.build_coords(laser_circle,img_c)
+        self.img_circles=img_circles
     def build_coords(self,laser_c,img_c):
         self.laser_c=laser_c
         self.img_c=img_c
