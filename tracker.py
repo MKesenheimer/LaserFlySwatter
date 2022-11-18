@@ -70,7 +70,9 @@ def main():
             if k == 27:
                 break
 
-        time.sleep(5)
+        
+        # TODO: next step, track an object and shoot it with the laser
+        
 
     except KeyboardInterrupt:
         print("Exiting.")
