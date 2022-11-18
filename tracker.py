@@ -7,13 +7,14 @@ import numpy
 from coords import coords
 import cv2 as cv
 
+# Notes:
+# col: Coordinate System of Laser
+# coc: Coordinate System of Camera
+
 def main():
     try:
+        # new renderer to render shapes on the laser show device
         renderer = lumax_renderer()
-
-        # Notes:
-        # cl: Coordinate System of Laser
-        # cc: Coordinate System of Camera
 
         # setup frame, generate a circle
         brigthness = 0.45 # 0 to 1
@@ -25,8 +26,8 @@ def main():
         b = restrict(b, 0, 255 * 255)
         # coordinates of the circle in the coordinate system of the laser
         circle_col = numpy.array([128 * 255, 128 * 255, 8000])
-        circle_shape = geometry.circle(circle_col[0], circle_col[1], circle_col[2], 100, r, g, b)
-        renderer.add_shape_to_frame(circle_shape)
+        shape = geometry.circle(circle_col[0], circle_col[1], circle_col[2], 100, r, g, b)
+        renderer.add_shape_to_frame(shape)
 
         # send the frame to the device
         renderer.send_frame(3000)
@@ -72,7 +73,7 @@ def main():
 
         
         # TODO: next step, track an object and shoot it with the laser
-        
+
 
     except KeyboardInterrupt:
         print("Exiting.")
