@@ -31,7 +31,7 @@ class coords():
         img_circles=list(img_circles)
         img_circles.sort(key=sortkey(2))
         img_circles=np.array(img_circles)[int(len(img_circles)/10):1-int(len(img_circles)/10)]
-        img_c=np.array([np.average(img_circles[:,0]),np.average(img_circles[:,1]),np.average(img_circles[:,2])],dtype="int16")
+        img_c=np.array([np.average(img_circles[:,0]), np.average(img_circles[:,1]), np.average(img_circles[:,2])], dtype="int16")
         #print(img_c)
         #print(img_circles)
         self.__build_coords(laser_circle,img_c)
@@ -53,6 +53,8 @@ class coords():
         y=(yI*self.img_scale)+self.y_shift
         return x,y
         
+    def image_coords(self):
+        return self.img_c
         
 #  0 --------------------------> 255 * 255
 #  |

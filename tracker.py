@@ -23,8 +23,9 @@ def main():
         r = restrict(r, 0, 255 * 255)
         g = restrict(g, 0, 255 * 255)
         b = restrict(b, 0, 255 * 255)
-        circle_cc = numpy.array([128 * 255, 128 * 255, 10000])
-        circle_shape = geometry.circle(circle_cc[0], circle_cc[1], circle_cc[2], 100, r, g, b)
+        # coordinates of the circle in the coordinate system of the laser
+        circle_cl = numpy.array([128 * 255, 128 * 255, 10000])
+        circle_shape = geometry.circle(circle_cl[0], circle_cl[1], circle_cl[2], 100, r, g, b)
         renderer.add_shape_to_frame(circle_shape)
 
         # send the frame to the device
@@ -38,35 +39,27 @@ def main():
         maximages = 100
         cap = cv.VideoCapture(0)
         while time.time() - starttime <= duration and len(images) < maximages:
-            # Take each frame
+            # Take each frame and add to the list
             _, frame = cap.read()
             images.append(frame)
-            #cv.imshow('frame',frame)
-            #k = cv.waitKey(5) & 0xFF
-            #if k == 27:
-            #    break
 
+        # cast of list of images to numpy array
         images = numpy.array(images)
-        print("[INFO] {} images captured. Continuing with calibration routine.".format(len(images)))
+        print("[INFO] {} images captured. Continuing with calibration routine...".format(len(images)))
         print("[DEBUG] Shape of images: {}".format(images.shape))
 
-        # calibration
-        coord_transformer = coords(images, circle_cc)
-        circle = coord_transformer.img_c
-        print("[INFO] Coordinates of circle in camera coordinate system: {}".format(circle))
+        # call the calibration routine
+        coord_transformer = coords(images, circle_cl)
+        # coordinates of the circle in the coordinate system of the camera
+        circle_cc = coord_transformer.image_coords()
+        print("[INFO] Coordinates of circle in CC: {}".format(circle_cc))
+        print("[INFO] Original coordinates of circle in CL: {}".format(circle_cl))
+        print("[INFO] Back-transformed coordinates of circle in CL: {}".format(coord_transformer.laser_coords(circle_cc[0:2])))
 
-        for i in range(images.shape[0]):
-            cv.circle(images[i],(circle[0],circle[1]),circle[2],(0,0,255),3)
-
-        #for i in range(images.shape[0]):
-        #    cv.imshow("test", images[i])
-        #    time.sleep(0.1)
-        #    k = cv.waitKey(5) & 0xFF
-        #    if k == 27:
-        #        break
-
-        print("[INFO] Coordinates of circle in laser coordinate system: {}".format(coord_transformer.laser_coords(circle_cc[0:2])))
-            
+        # show one image and the found circle
+        cv.circle(images[0], (circle_cc[0], circle_cc[1]), circle_cc[2], (0, 0, 255), 3)
+        cv.imshow("Calibration", images[0])
+        time.sleep(5)
 
         # close device
         renderer.close_device()
