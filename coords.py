@@ -9,8 +9,8 @@ class coords():
         img_circles=[]
         for i in range(len(frames)-1):
             cframe=np.add(frames[i]//2,frames[i+1]//2)
-            hsv = cv.cvtColor(cframe, cv.COLOR_BGR2HSV)
-            img = cv.medianBlur(hsv,3)
+            
+            img = cv.medianBlur(cframe,3)
             cimg = cv.cvtColor(img,cv.COLOR_BGR2GRAY)
             circles = cv.HoughCircles(cimg,cv.HOUGH_GRADIENT,2,10,param1=100,param2=100,minRadius=5,maxRadius=200)
             if type(circles) != type(None):
@@ -18,20 +18,20 @@ class coords():
                 c=circles[0,0]
                 # draw the outer circle
                 img_circles.append(c)
-        #def sortkey(iteration):
-        #    def rf(c):
-        #        return(c[iteration])
-        #    return rf
-        img_circles=np.array(img_circles)
-        #img_circles.sort(key=sortkey(0))
-        #img_circles=np.array(img_circles)[int(len(img_circles)/10):1-int(len(img_circles)/10)]
-        #img_circles=list(img_circles)
-        #img_circles.sort(key=sortkey(1))
-        #img_circles=np.array(img_circles)[int(len(img_circles)/10):1-int(len(img_circles)/10)]
-        #img_circles=list(img_circles)
-        #img_circles.sort(key=sortkey(2))
-        #img_circles=np.array(img_circles)[int(len(img_circles)/10):1-int(len(img_circles)/10)]
-        img_c=np.array([np.sum(img_circles[:,0])/len(img_circles),np.sum(img_circles[:,1])/len(img_circles),np.sum(img_circles[:,2])/len(img_circles)],dtype="int16")
+        def sortkey(iteration):
+            def rf(c):
+                return(c[iteration])
+            return rf
+       
+        img_circles.sort(key=sortkey(0))
+        img_circles=np.array(img_circles)[int(len(img_circles)/10):1-int(len(img_circles)/10)]
+        img_circles=list(img_circles)
+        img_circles.sort(key=sortkey(1))
+        img_circles=np.array(img_circles)[int(len(img_circles)/10):1-int(len(img_circles)/10)]
+        img_circles=list(img_circles)
+        img_circles.sort(key=sortkey(2))
+        img_circles=np.array(img_circles)[int(len(img_circles)/10):1-int(len(img_circles)/10)]
+        img_c=np.array([np.average(img_circles[:,0]),np.average(img_circles[:,1]),np.average(img_circles[:,2])],dtype="int16")
         #print(img_c)
         #print(img_circles)
         self.build_coords(laser_circle,img_c)
