@@ -52,6 +52,7 @@ class coords():
         x=(xI*self.img_scale)+self.x_shift
         y=(yI*self.img_scale)+self.y_shift
         return x,y
+        
     def laser_dist(self,dist):
         return dist*self.img_scale
         

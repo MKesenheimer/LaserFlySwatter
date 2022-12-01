@@ -7,9 +7,14 @@ import numpy
 from coords import coords
 import cv2 as cv
 
+# TODO:
+# - Die Koordinatenwerte von der Kamera sind von der Auflösung abhängig, d.h. bei Anschluss einer anderen Kamera muss entsprechend skaliert werden.
+
 # Notes:
 # col: Coordinate System of Laser
 # coc: Coordinate System of Camera
+
+DEBUG = True
 
 def main():
     try:
@@ -47,7 +52,7 @@ def main():
         images = numpy.array(images)
 
         # when all frames captures, close device and print status
-        renderer.close_device()
+        renderer.stop_frame()
         print("[INFO] {} images captured. Continuing with calibration routine...".format(len(images)))
         print("[DEBUG] Shape of images: {}".format(images.shape))
 
@@ -64,16 +69,67 @@ def main():
         # check: show one image and the found circle
         cv.circle(images[0], (circle_coc[0], circle_coc[1]), circle_coc[2], (0, 0, 255), 3)
         starttime = time.time()
-        duration = 1
+        duration = 2
         while time.time() - starttime <= duration:
             cv.imshow("Calibration", images[0])
             k = cv.waitKey(5) & 0xFF
             if k == 27:
                 break
+        cv.destroyWindow("Calibration")
 
-        
+        # Test: Die andere Richtung: Zeichne einen Kreis im Koordinatensystem der Kamera
+        # und überprüfe mit dem Laser
+        tcircle_coc = numpy.array([845, 457 + 20, 137])
+        tcircle_col = numpy.zeros((3))
+        tcircle_col[0:2] = coord_transformer.laser_coords(tcircle_coc[0:2])
+        tcircle_col[2] = coord_transformer.laser_dist(tcircle_coc[2])
+        shape = geometry.circle(tcircle_col[0], tcircle_col[1], tcircle_col[2], 100, r, g, b)
+        renderer.new_frame()
+        renderer.add_shape_to_frame(shape)
+        renderer.send_frame(3000)
+        time.sleep(1)
+        _, timage = cap.read()
+        cv.circle(timage, (tcircle_coc[0], tcircle_coc[1]), tcircle_coc[2], (0, 0, 255), 3)
+        starttime = time.time()
+        duration = 2
+        while time.time() - starttime <= duration:
+            cv.imshow("Test", timage)
+            k = cv.waitKey(5) & 0xFF
+            if k == 27:
+                break
+        renderer.stop_frame()
+        cv.destroyWindow("Test")
+
         # TODO: next step, track an object and shoot it with the laser
+        while True:
+            renderer.stop_frame()
+            _, cimage = cap.read()
+            gimage = cv.medianBlur(cimage,3)
+            gimage = cv.cvtColor(gimage,cv.COLOR_BGR2GRAY)
+            hough_circles = cv.HoughCircles(gimage,cv.HOUGH_GRADIENT,2,10,param1=100,param2=100,minRadius=5,maxRadius=200)
+            if type(hough_circles) != type(None):
+                hough_circles = numpy.uint16(numpy.around(hough_circles))
+                best_fit_coc = hough_circles[0,0]
+                print("[DEBUG] Found circle at: {}".format(best_fit_coc))
+                ccircle_col = numpy.zeros((3))
+                ccircle_col[0:2] = coord_transformer.laser_coords(best_fit_coc[0:2])
+                ccircle_col[2] = coord_transformer.laser_dist(best_fit_coc[2])
+                print("[DEBUG] Transformed circle coords in CL: {}".format(ccircle_col))
+                #shape = geometry.circle(ccircle_col[0], ccircle_col[1], ccircle_col[2], 100, r, g, b)
+                shape = geometry.triangle(ccircle_col[0], ccircle_col[1], ccircle_col[0] + ccircle_col[2] / 2, ccircle_col[1] + ccircle_col[2] / 2, ccircle_col[0] - ccircle_col[2] / 2, ccircle_col[1] + ccircle_col[2] / 2, 5, r, g, b)
+                renderer.new_frame()
+                renderer.add_shape_to_frame(shape)
+                renderer.send_frame(3000)
+                if DEBUG:
+                    cv.circle(cimage, (best_fit_coc[0], best_fit_coc[1]), best_fit_coc[2], (0, 0, 255), 3)
+                    cv.imshow("Tracker", cimage)
+                    k = cv.waitKey(5) & 0xFF
+                    if k == 27:
+                        break
+        
 
+        # close the device in the end
+        renderer.close_device()
 
     except KeyboardInterrupt:
         print("Exiting.")
