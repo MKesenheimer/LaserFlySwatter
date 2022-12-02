@@ -15,6 +15,15 @@ import cv2 as cv
 # coc: Coordinate System of Camera
 
 DEBUG = True
+VIDEODEVICE = 1
+
+def close_exit(renderer):
+    print("Exiting.")
+    renderer.close_device()
+    try:
+        sys.exit(0)
+    except SystemExit:
+        os._exit(0)
 
 def main():
     try:
@@ -35,6 +44,7 @@ def main():
         renderer.add_shape_to_frame(shape)
 
         # send the frame to the device
+        print("[INFO] Calibrating...")
         renderer.send_frame(3000)
         time.sleep(1)
 
@@ -43,7 +53,7 @@ def main():
         starttime = time.time()
         duration = 10
         maximages = 100
-        cap = cv.VideoCapture(0)
+        cap = cv.VideoCapture(VIDEODEVICE)
         while time.time() - starttime <= duration and len(images) < maximages:
             # Take each frame and add to the list
             _, frame = cap.read()
@@ -58,7 +68,13 @@ def main():
 
         
         # call the calibration routine
-        coord_transformer = coords(images, circle_col)
+        try:
+            coord_transformer = coords(images, circle_col)
+        except:
+            print("[ERROR] Calibration failed. Probably no circles detected. Try again.")
+            close_exit(renderer)
+
+
         # coordinates of the circle in the coordinate system of the camera
         circle_coc = coord_transformer.image_coords()
         print("[INFO] CL: Coordinate system of laser; CC: Coordinate system of camera.")
@@ -82,7 +98,7 @@ def main():
         tcircle_coc = numpy.array([845, 457 + 20, 137])
         tcircle_col = numpy.zeros((3))
         tcircle_col[0:2] = coord_transformer.laser_coords(tcircle_coc[0:2])
-        tcircle_col[2] = coord_transformer.laser_dist(tcircle_coc[2])
+        tcircle_col[2] = coord_transformer.laser_scale(tcircle_coc[2])
         shape = geometry.circle(tcircle_col[0], tcircle_col[1], tcircle_col[2], 100, r, g, b)
         renderer.new_frame()
         renderer.add_shape_to_frame(shape)
@@ -100,7 +116,7 @@ def main():
         renderer.stop_frame()
         cv.destroyWindow("Test")
 
-        # TODO: next step, track an object and shoot it with the laser
+        # track an object and shoot it with the laser
         while True:
             renderer.stop_frame()
             _, cimage = cap.read()
@@ -111,15 +127,25 @@ def main():
                 hough_circles = numpy.uint16(numpy.around(hough_circles))
                 best_fit_coc = hough_circles[0,0]
                 print("[DEBUG] Found circle at: {}".format(best_fit_coc))
-                ccircle_col = numpy.zeros((3))
+                ccircle_col = numpy.zeros((3), dtype='uint16')
                 ccircle_col[0:2] = coord_transformer.laser_coords(best_fit_coc[0:2])
-                ccircle_col[2] = coord_transformer.laser_dist(best_fit_coc[2])
+                ccircle_col[2] = coord_transformer.laser_scale(best_fit_coc[2])
                 print("[DEBUG] Transformed circle coords in CL: {}".format(ccircle_col))
                 #shape = geometry.circle(ccircle_col[0], ccircle_col[1], ccircle_col[2], 100, r, g, b)
-                shape = geometry.triangle(ccircle_col[0], ccircle_col[1], ccircle_col[0] + ccircle_col[2] / 2, ccircle_col[1] + ccircle_col[2] / 2, ccircle_col[0] - ccircle_col[2] / 2, ccircle_col[1] + ccircle_col[2] / 2, 5, r, g, b)
+                shape1 = geometry.triangle(ccircle_col[0], ccircle_col[1], 
+                                           ccircle_col[0] + ccircle_col[2] / 2, ccircle_col[1] + ccircle_col[2] / 2, 
+                                           ccircle_col[0] - ccircle_col[2] / 2, ccircle_col[1] + ccircle_col[2] / 2, 
+                                           5, r, g, b)
+                shape2 = geometry.triangle(ccircle_col[0], ccircle_col[1], 
+                                           ccircle_col[0] + ccircle_col[2] / 2, ccircle_col[1] - ccircle_col[2] / 2, 
+                                           ccircle_col[0] - ccircle_col[2] / 2, ccircle_col[1] - ccircle_col[2] / 2, 
+                                           5, r, g, b)
+                shape1 = geometry.rotate_shape(shape1, ccircle_col[0:2], 90)
+                shape2 = geometry.rotate_shape(shape2, ccircle_col[0:2], 90)
                 renderer.new_frame()
-                renderer.add_shape_to_frame(shape)
-                renderer.send_frame(3000)
+                renderer.add_shape_to_frame(shape1)
+                renderer.add_shape_to_frame(shape2)
+                renderer.send_frame(1000)
                 if DEBUG:
                     cv.circle(cimage, (best_fit_coc[0], best_fit_coc[1]), best_fit_coc[2], (0, 0, 255), 3)
                     cv.imshow("Tracker", cimage)
@@ -130,14 +156,10 @@ def main():
 
         # close the device in the end
         renderer.close_device()
+        cv.destroyWindow("Tracker")
 
     except KeyboardInterrupt:
-        print("Exiting.")
-        renderer.close_device()
-        try:
-            sys.exit(0)
-        except SystemExit:
-            os._exit(0)
+        close_exit(renderer)
 
 # main program
 if __name__ == '__main__':
