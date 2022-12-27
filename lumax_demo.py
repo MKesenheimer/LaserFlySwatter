@@ -3,38 +3,75 @@ import time
 import math
 import sys
 import os
-
-def restrict(x, minx, maxx):
-    return max(min(maxx, x), minx)
+import numpy
 
 def main():
-    global lhandle
-    print("API version: {}".format(lumax.get_api_version()))
-    print("Number of physical devices: {}".format(lumax.get_physical_devices()))
-    lhandle = lumax.open_device(1, 0)
-    print("Lumax handle: {}".format(lhandle))
+    try:
+        renderer = lumax_renderer()
 
-    print("SetTTL return: {}".format(lumax.setTTL(lhandle, 0)))
+        # setup frame, generate a circle
+        brigthness = 0.45 # 0 to 1
+        r = int(brigthness * 255 * 255)
+        g = int(brigthness * 255 * 255)
+        b = int(brigthness * 255 * 255)
+        r = restrict(r, 0, 255 * 255)
+        g = restrict(g, 0, 255 * 255)
+        b = restrict(b, 0, 255 * 255)
+        circle = geometry.circle(128 * 255, 128 * 255, 5000, 100, r, g, b)
+        renderer.add_shape_to_frame(circle)
 
-    ret, timeToWait, bufferChanged = lumax.wait_for_buffer(lhandle, 17)
-    print("WaitForBuffer return: {}, {}, {}".format(ret, timeToWait, bufferChanged))
+        # add another circle
+        circle1 = geometry.circle(150 * 255, 150 * 255, 500, 10, 0, 255 * 255, 0)
+        renderer.add_shape_to_frame(circle1)
 
-    brigthness = 0.45 # 0 to 1
-    r = int(brigthness * 255 * 255)
-    g = int(brigthness * 255 * 255)
-    b = int(brigthness * 255 * 255)
-    r = restrict(r, 0, 255 * 255)
-    g = restrict(g, 0, 255 * 255)
-    b = restrict(b, 0, 255 * 255)
-    # generiere einen Kreis mit 100 Punkten
-    points = lumax.gen_circle(128 * 255, 128 * 255, 5000, 100, r, g, b)
-    ret, timeToWait = lumax.send_frame(lhandle, points, 10000, 0)
-    print("SendFrame return: {}, {}".format(ret, timeToWait))
-    ret, timeToWait, bufferChanged = lumax.wait_for_buffer(lhandle, 17)
-    time.sleep(100)
+        # add a point
+        point = numpy.array([128 * 255, 128 * 255, 255 * 255, 255 * 255, 255 * 255])
+        renderer.add_point_to_frame(point)
 
-    print("StopFrame return: {}".format(lumax.stop_frame(lhandle)))
-    print("CloseDevice return: {}".format(lumax.close_device(lhandle)))
+        # send the frame to the device
+        renderer.send_frame(1000)
+
+        # wait
+        time.sleep(1)
+
+        # new frame
+        renderer.new_frame()
+
+        # add multiple points (triangle)
+        points = numpy.array([[190 * 255, 170 * 255, 0, 255 * 255, 255 * 255], 
+                              [190 * 255, 190 * 255, 0, 255 * 255, 255 * 255],
+                              [200 * 255, 190 * 255, 0, 255 * 255, 255 * 255],
+                              [190 * 255, 170 * 255, 0, 255 * 255, 255 * 255]])
+        renderer.add_points_to_frame(points)
+
+        # add line with interpolated points
+        line = geometry.line(160 * 255, 160 * 255, 178 * 255, 178 * 255, 5, 255 * 255, 255 * 255, 255 * 255)
+        renderer.add_shape_to_frame(line)
+
+        # add triangle
+        triangle = geometry.triangle(100 * 255, 100 * 255, 156 * 255, 100 * 255, 128 * 255, 90 * 255, 10, 255 * 255, 255 * 255, 0)
+        renderer.add_shape_to_frame(triangle)
+
+        # add square
+        square = geometry.tetragon(118 * 255, 118 * 255, 138 * 255, 118 * 255, 138 * 255, 138 * 255, 118 * 255, 138 * 255, 10, 255 * 255, 0, 255 * 255)
+        renderer.add_shape_to_frame(square)
+
+        # send the frame to the device
+        renderer.send_frame(1000)
+
+        # wait
+        time.sleep(100)
+
+        # close device
+        renderer.close_device()
+
+    except KeyboardInterrupt:
+        print("Exiting.")
+        renderer.close_device()
+        try:
+            sys.exit(0)
+        except SystemExit:
+            os._exit(0)
 
 # main program
 if __name__ == '__main__':
@@ -44,14 +81,5 @@ if __name__ == '__main__':
     #parser.add_argument('--pack', dest='pack', type=int, default=24, help='y-position to read the data from')
     #args = parser.parse_args()
 
-    global lhandle
-    try:
-        main()
-    except KeyboardInterrupt:
-        print("Exiting.")
-        lumax.stop_frame(lhandle)
-        lumax.close_device(lhandle)
-        try:
-            sys.exit(0)
-        except SystemExit:
-            os._exit(0)
+    main()
+
