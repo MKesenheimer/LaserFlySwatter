@@ -1,0 +1,8 @@
+Hough Circle Transform
+Eine der für unser Projekt meistbenutzten Funktionen von OpenCV ist die HoughCircles Methode.
+Diese wird benutzt um Kreise in einem Bild zu finden. Sie Funktioniert folgendermaßen: Zuerst werden im Originalbild (Abb1) die Kanten Gesucht (Abb2).
+Anschließend werden für alle möglichen Radien (von einem Festgelegten Minimum bis normalerweise der Länge der diagonale des Bildes) in seperaten Arrays mit Dimensionen des Bildes Kreise mit dem zugehörigen Radius übereinandergelegt(Abb3-5).
+Gehen  nun für einen Radius viele dieser Kreise durch denselben Punkt, sind also Gleichweit von diesem Entfernt kann man davon Außgehen, dass dieser Punkt Mittelpunkt eine Kreißes mit besagtem Radius ist(Abb4, irgendwie markieren).
+Vorstellbar ist dass Ganze so, dass man lokale Maxima in der Helligkeit de Hellsten Punktes für jeden Radius sucht(Abb6, Blaue linie).
+Radius ist dann die X stelle dieses Maximums, x und y Koordinaten des Mittelpunkts sind die orange und grüne Linie, einfach Koordinaten des Hellsten Punktes bei diesem Radius.
+Anschließend kann man zur Kontrolle den Kreis in dass Originalbild Einzeichnen(Abb7)

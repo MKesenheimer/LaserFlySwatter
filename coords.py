@@ -3,6 +3,7 @@ import math
 import time
 import cv2 as cv
 
+#coordinates
 DEBUG = 1
 
 class coords():
