@@ -62,11 +62,13 @@ class coords():
         
 
     def __build_coords(self,laser_c,img_c):
-        self.laser_c=laser_c
-        self.img_c=img_c
-        self.img_scale=int(laser_c[2]/img_c[2])
-        self.x_shift=int(laser_c[0]-(img_c[0]*self.img_scale))
-        self.y_shift=int(laser_c[1]-(img_c[1]*self.img_scale))
+        self.laser_c = laser_c
+        self.img_c = img_c
+        radius_l = laser_c[2]
+        radius_c = img_c[2]
+        self.img_scale = int(radius_l/radius_c)
+        self.x_shift = int(laser_c[0]-(img_c[0]*self.img_scale))
+        self.y_shift = int(laser_c[1]-(img_c[1]*self.img_scale))
         print("[DEBUG] x_shift: {}".format(self.x_shift))
         print("[DEBUG] y_shift: {}".format(self.y_shift))
         print("[DEBUG] img_scale: {}".format(self.img_scale))
