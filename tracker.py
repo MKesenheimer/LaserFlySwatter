@@ -15,7 +15,7 @@ import cv2 as cv
 # coc: Coordinate System of Camera
 
 DEBUG = True
-VIDEODEVICE = 1
+VIDEODEVICE = 0
 
 def close_exit(renderer):
     print("Exiting.")
