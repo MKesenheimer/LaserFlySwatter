@@ -17,4 +17,4 @@ Hier wird die Kantenbreite auf einen Pixel limitiert, dazu werden Alle werte, di
 Arbeitet mit 2 Wertem, T1 < T2
 Für  G>T2: Kante
 Für  G<T1: Keine Kante
-Für  T1<G<T2 Falls einer der Nachbarn dieses Pixels G>T2 : wert dieses Pixels G=T2, so dass dieser nun auch zur Aktivierung von Unsicheren Pixeln verwendet werden kann.
+Für  T1<G<T2 Falls einer der Nachbarn dieses Pixels G>T2 : wert dieses Pixels G=T2, so dass dieser nun auch zur Aktivierung von Unsicheren benachbarten Pixeln verwendet werden kann.
