@@ -1,0 +1,20 @@
+Die Methode, die wir z.B beim Finden von Kanten für die HougCircles Methode verwenden, um Knten zu finden heißt Canny Edge Detection.
+Benannt nach ihren Entwickel, John F. Canny, lässt sie sich im wesentlichen in 4 Schritte aufteilen:
+1. Grayscale und Noise Reduction (Gaussian)
+2. Intesity Gradients:
+Hier werden Sobeloperatoren in X und Y richtung angewendet(
+(-1|0|1
+ -2|0|2
+ -1|0|1)=Gx,
+(1 | 2| 1
+ 0 | 0| 0
+ -1|-2|-1)=Gy)
+anschließend wird die Kantenstärke berechnet (G=sqrt(Gx²+Gy²))
+und die rictung der Kante mit atan2(Gx,Gy) gerundet auf einen dieser 4 Winkel (0°, 45°, 90°, 135°)
+3. Non Maximum Suppression
+Hier wird die Kantenbreite auf einen Pixel limitiert, dazu werden Alle werte, die Keine Lokalen Maxima von G horizontal zur Kante sind auf 0 gesetzt.
+4. Hysteresis
+Arbeitet mit 2 Wertem, T1 < T2
+Für  G>T2: Kante
+Für  G<T1: Keine Kante
+Für  T1<G<T2 Falls einer der Nachbarn dieses Pixels G>T2 : wert dieses Pixels G=T2, so dass dieser nun auch zur Aktivierung von Unsicheren Pixeln verwendet werden kann.
