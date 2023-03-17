@@ -1,0 +1,3 @@
+[submodule "lumax"]
+	path = lumax
+	url = git@github.com:MKesenheimer/lumax.git
